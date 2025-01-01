@@ -42,12 +42,12 @@ class Window(customtkinter.CTk):
 
     def save_deadline(self):
         if self.deadline_field:
-            return self.deadline_field.get()
+            return datetime.strptime(self.deadline_field.get(), '%Y-%m-%d').date()
         return ""
 
     def save_position_to_db(self):
         for _ in range(0, len(self.names)):
-            tea = add_task(db, self.names[_], self.descriptions[_], self.deadlines[_])
+            add_task(db, self.names[_], self.descriptions[_], self.deadlines[_])
             self.names.pop(_)
             self.descriptions.pop(_)
             self.deadlines.pop(_)
@@ -83,14 +83,16 @@ class Window(customtkinter.CTk):
         result = db.query(Tasks).all()
 
         for item in result:
+            formatted_deadline = datetime.strftime(item.deadline, '%Y-%m-%d')
+            #formatted_deadline = deadline_date.strftime('%Y-%m-%d')
             this_info = customtkinter.CTkLabel(self.scrollable_frame,
-                                               text=("\n\nИмя: " + item.name + "\n Описание: " + item.description + "\nДедлайн: " + item.deadline.strftime('%Y-%m-%d')),
+                                               text=("\n\nИмя: " + item.name + "\n Описание: " + item.description + "\nДедлайн: " + formatted_deadline),
                                                font=("Arial", 20))
             this_info.pack()
 
     def init_window(self):
-        label_tea = customtkinter.CTkLabel(self, text="Input task name", font=("Arial", 20))
-        label_tea.pack()
+        label_name = customtkinter.CTkLabel(self, text="Input task name", font=("Arial", 20))
+        label_name.pack()
 
         self.name_field = customtkinter.CTkEntry(self, width=300, placeholder_text="input task name", font=("Arial", 18))
         self.name_field.pack()
